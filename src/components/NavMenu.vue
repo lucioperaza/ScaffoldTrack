@@ -1,3 +1,17 @@
+<script setup>
+import { ref } from 'vue'
+import { RouterLink } from 'vue-router'
+
+const menuOpen = ref(false)
+
+function toggleMenu() {
+  menuOpen.value = !menuOpen.value
+}
+function closeMenu() {
+  menuOpen.value = false
+}
+</script>
+
 <template>
   <nav
     class="sticky top-0 z-50 flex h-14 items-center gap-6 bg-linear-to-r from-amber-400 to-orange-600 px-6 shadow-md"
@@ -95,17 +109,3 @@
     </div>
   </nav>
 </template>
-
-<script setup>
-import { ref } from 'vue'
-import { RouterLink } from 'vue-router'
-
-const menuOpen = ref(false)
-
-function toggleMenu() {
-  menuOpen.value = !menuOpen.value
-}
-function closeMenu() {
-  menuOpen.value = false
-}
-</script>
