@@ -9,9 +9,24 @@ const routes = [
     component: HomePage,
   },
   {
-    path: '/other',
-    name: 'other',
-    component: () => import('@/views/OtherPage.vue'),
+    path: '/AddScaffold',
+    name: 'addScaffold',
+    component: () => import('@/views/AddScaffold.vue'),
+  },
+  {
+    path: '/ScaffoldList',
+    name: 'scaffoldList',
+    component: () => import('@/views/ScaffoldList.vue'),
+  },
+  {
+    path: '/EditScaffold/:id',
+    name: 'editScaffold',
+    component: () => import('@/views/EditScaffold.vue'),
+  },
+  {
+    path: '/ModifyScaffold/:id',
+    name: 'modifyScaffold',
+    component: () => import('@/views/ModifyScaffold.vue'),
   },
   {
     path: '/:pathMatch(.*)*',
