@@ -3,12 +3,21 @@ import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
 
 const menuOpen = ref(false)
+const isLoggedIn = ref(false)
+
+isLoggedIn.value = !!localStorage.getItem('accessToken')
 
 function toggleMenu() {
   menuOpen.value = !menuOpen.value
 }
 function closeMenu() {
   menuOpen.value = false
+}
+
+function logout() {
+  localStorage.removeItem('accessToken')
+
+  window.location.href = '/'
 }
 </script>
 
@@ -57,6 +66,33 @@ function closeMenu() {
       >
         Scaffold List
       </RouterLink>
+
+      <RouterLink
+        v-if="!isLoggedIn"
+        to="/register"
+        class="rounded-lg border border-white/25 bg-white/15 px-4 py-1.5 text-sm text-white no-underline transition-colors hover:bg-white/30"
+        active-class="bg-white/35 font-semibold"
+        @click="closeMenu"
+      >
+        Register
+      </RouterLink>
+
+      <RouterLink
+        v-if="!isLoggedIn"
+        to="/login"
+        class="rounded-lg border border-white/25 bg-white/15 px-4 py-1.5 text-sm text-white no-underline transition-colors hover:bg-white/30"
+        active-class="bg-white/35 font-semibold"
+        @click="closeMenu"
+      >
+        Login
+      </RouterLink>
+      <button
+        v-if="isLoggedIn"
+        class="rounded-lg border border-white/25 bg-white/15 px-4 py-1.5 text-sm text-white transition-colors hover:bg-white/30"
+        @click="logout"
+      >
+        Logout
+      </button>
     </div>
 
     <button
@@ -106,6 +142,31 @@ function closeMenu() {
       >
         Scaffold List
       </RouterLink>
+      <RouterLink
+        v-if="!isLoggedIn"
+        to="/register"
+        class="border-b border-white/15 px-6 py-3.5 text-base font-medium text-white no-underline transition-colors hover:bg-white/15"
+        active-class="bg-white/25 font-bold"
+        @click="closeMenu"
+      >
+        Register
+      </RouterLink>
+      <RouterLink
+        v-if="!isLoggedIn"
+        to="/login"
+        class="px-6 py-3.5 text-base font-medium text-white no-underline transition-colors hover:bg-white/15"
+        active-class="bg-white/25 font-bold"
+        @click="closeMenu"
+      >
+        Login
+      </RouterLink>
+      <button
+        v-if="isLoggedIn"
+        class="w-full px-6 py-3.5 text-left text-base font-medium text-white transition-colors hover:bg-white/15"
+        @click="logout"
+      >
+        Logout
+      </button>
     </div>
   </nav>
 </template>
