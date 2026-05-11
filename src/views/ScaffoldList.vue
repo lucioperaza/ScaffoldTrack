@@ -1,12 +1,25 @@
 <script setup>
 import { RouterLink } from 'vue-router'
 import { onMounted, ref } from 'vue'
-import { getScaffolds, deleteScaffold } from '../services/api'
+import { getScaffolds, deleteScaffold, getScaffoldMaterials } from '../services/api'
 
 const scaffolds = ref([])
 
 async function loadScaffolds() {
   scaffolds.value = await getScaffolds()
+
+  const scaffoldData = await getScaffolds()
+
+  for (const scaffold of scaffoldData) {
+    const materials = await getScaffoldMaterials(scaffold.id)
+
+    scaffold.materialCount = materials.reduce(
+      (total, material) => total + Number(material.quantity),
+      0,
+    )
+  }
+
+  scaffolds.value = scaffoldData
 }
 
 async function handleDelete(id) {
@@ -46,6 +59,8 @@ onMounted(() => {
       <p class="mb-3 text-xs text-amber-700">
         {{ scaffold.length }}ft × {{ scaffold.width }}ft × {{ scaffold.height }}ft
       </p>
+
+      <p class="mb-3 text-xs text-orange-700">{{ scaffold.materialCount }} total pieces</p>
 
       <div class="mb-3">
         <p class="text-sm font-medium text-orange-800">
