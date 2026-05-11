@@ -41,3 +41,29 @@ export async function createScaffold(data) {
 
   return response.json()
 }
+
+export async function getScaffoldById(id) {
+  const response = await fetch(`${API_BASE}/scaffolds/${id}`)
+
+  return response.json()
+}
+
+export async function updateScaffold(id, data) {
+  const response = await fetch(`${API_BASE}/scaffolds/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+
+  return response.json()
+}
+
+export async function deleteScaffold(id) {
+  const response = await fetch(`${API_BASE}/scaffolds/${id}`, {
+    method: 'DELETE',
+  })
+
+  return response.json()
+}

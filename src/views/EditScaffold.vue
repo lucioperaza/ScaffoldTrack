@@ -1,5 +1,45 @@
 <script setup>
-import { RouterLink } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { RouterLink, useRouter, useRoute } from 'vue-router'
+
+import { getScaffoldById, updateScaffold } from '@/services/api'
+
+const route = useRoute()
+const router = useRouter()
+
+const scaffoldId = route.params.id
+
+const location = ref('')
+const tagNumber = ref('')
+const length = ref(0)
+const width = ref(0)
+const height = ref(0)
+
+async function loadScaffold() {
+  const scaffold = await getScaffoldById(scaffoldId)
+
+  location.value = scaffold.location
+  tagNumber.value = scaffold.tagNumber
+  length.value = scaffold.length
+  width.value = scaffold.width
+  height.value = scaffold.height
+}
+
+async function handleSubmit() {
+  await updateScaffold(scaffoldId, {
+    location: location.value,
+    tagNumber: tagNumber.value,
+    length: Number(length.value),
+    width: Number(width.value),
+    height: Number(height.value),
+  })
+
+  router.push('/ScaffoldList')
+}
+
+onMounted(() => {
+  loadScaffold()
+})
 </script>
 
 <template>
@@ -18,11 +58,20 @@ import { RouterLink } from 'vue-router'
       <h2 class="mb-4 border-b border-yellow-200 pb-2 text-sm font-semibold text-amber-700">
         Scaffold Identification
       </h2>
+      <div class="mb-4">
+        <label class="mb-1 block text-xs font-medium text-amber-800"> Location </label>
+
+        <input
+          v-model="location"
+          type="text"
+          class="w-full rounded-lg border border-orange-200 bg-amber-50 px-3 py-2.5 text-orange-900 transition-colors outline-none focus:border-amber-400"
+        />
+      </div>
       <div>
         <label class="mb-1 block text-xs font-medium text-amber-800">Tag Number</label>
         <input
+          v-model="tagNumber"
           type="text"
-          value="0001"
           class="w-full rounded-lg border border-orange-200 bg-amber-50 px-3 py-2.5 text-orange-900 transition-colors outline-none focus:border-amber-400"
         />
       </div>
@@ -36,8 +85,8 @@ import { RouterLink } from 'vue-router'
         <div>
           <label class="mb-1 block text-xs font-medium text-amber-800">Length (ft)</label>
           <input
+            v-model="length"
             type="number"
-            value="10"
             min="0"
             class="w-full rounded-lg border border-orange-200 bg-amber-50 px-3 py-2.5 text-orange-900 transition-colors outline-none focus:border-amber-400"
           />
@@ -45,8 +94,8 @@ import { RouterLink } from 'vue-router'
         <div>
           <label class="mb-1 block text-xs font-medium text-amber-800">Width (ft)</label>
           <input
+            v-model="width"
             type="number"
-            value="7"
             min="0"
             class="w-full rounded-lg border border-orange-200 bg-amber-50 px-3 py-2.5 text-orange-900 transition-colors outline-none focus:border-amber-400"
           />
@@ -54,8 +103,8 @@ import { RouterLink } from 'vue-router'
         <div>
           <label class="mb-1 block text-xs font-medium text-amber-800">Height (ft)</label>
           <input
+            v-model="height"
             type="number"
-            value="14"
             min="0"
             class="w-full rounded-lg border border-orange-200 bg-amber-50 px-3 py-2.5 text-orange-900 transition-colors outline-none focus:border-amber-400"
           />
@@ -307,6 +356,7 @@ import { RouterLink } from 'vue-router'
 
     <button
       class="w-full cursor-pointer rounded-lg border-none bg-linear-to-r from-amber-400 to-orange-500 py-3 font-semibold text-white transition-all hover:opacity-90 active:scale-95"
+      @click="handleSubmit"
     >
       Save Changes
     </button>
