@@ -1,5 +1,18 @@
 <script setup>
 import { RouterLink } from 'vue-router'
+
+import { onMounted, ref } from 'vue'
+import { getScaffolds } from '../services/api'
+
+const scaffolds = ref([])
+
+async function loadScaffolds() {
+  scaffolds.value = await getScaffolds()
+}
+
+onMounted(() => {
+  loadScaffolds()
+})
 </script>
 
 <template>
@@ -14,70 +27,37 @@ import { RouterLink } from 'vue-router'
     <h1 class="mb-1 text-2xl font-bold text-orange-900">Scaffold List</h1>
     <p class="mb-6 text-sm text-amber-800">All tracked scaffolds</p>
 
-    <div class="mb-4 rounded-xl border border-orange-200 bg-white p-5">
+    <div
+      v-for="scaffold in scaffolds"
+      :key="scaffold.id"
+      class="mb-4 rounded-xl border border-orange-200 bg-white p-5"
+    >
       <div class="mb-2 flex items-center justify-between">
-        <span class="text-base font-semibold text-orange-900">0001</span>
+        <span class="text-base font-semibold text-orange-900">
+          {{ scaffold.tagNumber }}
+        </span>
       </div>
 
-      <p class="mb-3 text-xs text-amber-700">10ft × 7ft × 14ft</p>
+      <p class="mb-3 text-xs text-amber-700">
+        {{ scaffold.length }}ft × {{ scaffold.width }}ft × {{ scaffold.height }}ft
+      </p>
 
-      <div class="mb-1">
-        <p class="mb-1 text-xs font-semibold tracking-wide text-orange-700 uppercase">Legs</p>
-        <div class="mb-2 flex flex-wrap gap-1.5">
-          <span
-            class="rounded-full border border-yellow-200 bg-yellow-50 px-3 py-1 text-xs text-yellow-800"
-            >4 - 10ft Legs</span
-          >
-          <span
-            class="rounded-full border border-yellow-200 bg-yellow-50 px-3 py-1 text-xs text-yellow-800"
-            >4 - 7ft Legs</span
-          >
-        </div>
-
-        <p class="mb-1 text-xs font-semibold tracking-wide text-orange-700 uppercase">Runners</p>
-        <div class="mb-2 flex flex-wrap gap-1.5">
-          <span
-            class="rounded-full border border-yellow-200 bg-yellow-50 px-3 py-1 text-xs text-yellow-800"
-            >2 - 10ft Runners</span
-          >
-          <span
-            class="rounded-full border border-yellow-200 bg-yellow-50 px-3 py-1 text-xs text-yellow-800"
-            >2 - 4ft Runners</span
-          >
-        </div>
-
-        <p class="mb-1 text-xs font-semibold tracking-wide text-orange-700 uppercase">Boards</p>
-        <div class="mb-2 flex flex-wrap gap-1.5">
-          <span
-            class="rounded-full border border-yellow-200 bg-yellow-50 px-3 py-1 text-xs text-yellow-800"
-            >3 - 10ft Boards</span
-          >
-        </div>
-
-        <p class="mb-1 text-xs font-semibold tracking-wide text-orange-700 uppercase">
-          Miscellaneous
+      <div class="mb-3">
+        <p class="text-sm font-medium text-orange-800">
+          {{ scaffold.location }}
         </p>
-        <div class="mb-3 flex flex-wrap gap-1.5">
-          <span
-            class="rounded-full border border-yellow-200 bg-yellow-50 px-3 py-1 text-xs text-yellow-800"
-            >4 - Jacks</span
-          >
-          <span
-            class="rounded-full border border-yellow-200 bg-yellow-50 px-3 py-1 text-xs text-yellow-800"
-            >4 - Starters</span
-          >
-        </div>
       </div>
 
       <div class="flex gap-2">
         <RouterLink
-          to="/EditScaffold/1"
+          :to="`/EditScaffold/${scaffold.id}`"
           class="flex-1 rounded-lg border border-yellow-300 bg-yellow-100 py-2 text-center text-sm font-medium text-yellow-800 transition-colors hover:bg-yellow-200"
         >
           Edit
         </RouterLink>
+
         <RouterLink
-          to="/ModifyScaffold/1"
+          :to="`/ModifyScaffold/${scaffold.id}`"
           class="flex-1 rounded-lg border border-orange-300 bg-orange-100 py-2 text-center text-sm font-medium text-orange-800 transition-colors hover:bg-orange-200"
         >
           Modify
@@ -85,7 +65,7 @@ import { RouterLink } from 'vue-router'
       </div>
     </div>
 
-    <div class="mb-4 rounded-xl border border-orange-200 bg-white p-5">
+    <!-- <div class="mb-4 rounded-xl border border-orange-200 bg-white p-5">
       <div class="mb-2 flex items-center justify-between">
         <span class="text-base font-semibold text-orange-900">0002</span>
       </div>
@@ -139,9 +119,9 @@ import { RouterLink } from 'vue-router'
           Modify
         </RouterLink>
       </div>
-    </div>
+    </div> -->
 
-    <div class="mb-4 rounded-xl border border-orange-200 bg-white p-5">
+    <!-- <div class="mb-4 rounded-xl border border-orange-200 bg-white p-5">
       <div class="mb-2 flex items-center justify-between">
         <span class="text-base font-semibold text-orange-900">0003</span>
       </div>
@@ -217,6 +197,6 @@ import { RouterLink } from 'vue-router'
           Modify
         </RouterLink>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
