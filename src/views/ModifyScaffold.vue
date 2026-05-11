@@ -1,5 +1,66 @@
 <script setup>
-import { RouterLink } from 'vue-router'
+import { ref, onMounted, computed } from 'vue'
+import { RouterLink, useRoute } from 'vue-router'
+
+import { getScaffoldById, getScaffoldMaterials, updateScaffoldMaterials } from '@/services/api'
+
+const route = useRoute()
+
+const scaffoldId = route.params.id
+
+const scaffold = ref(null)
+
+const materials = ref({
+  '10ft Legs': 0,
+  '7ft Legs': 0,
+  '5ft Legs': 0,
+  '3ft Legs': 0,
+
+  '10ft Runners': 0,
+  '7ft Runners': 0,
+  '5ft Runners': 0,
+  '4ft Runners': 0,
+  '2ft Runners': 0,
+
+  '10ft Boards': 0,
+  '7ft Boards': 0,
+  '5ft Boards': 0,
+
+  Jacks: 0,
+  Starters: 0,
+  'Right Angles': 0,
+  Swivels: 0,
+  'Beam Clamps': 0,
+})
+
+const materialList = computed(() => {
+  return Object.entries(materials.value)
+    .filter(([_, quantity]) => quantity > 0)
+    .map(([materialName, quantity]) => ({
+      materialName,
+      quantity,
+    }))
+})
+
+async function loadScaffold() {
+  scaffold.value = await getScaffoldById(scaffoldId)
+
+  const existingMaterials = await getScaffoldMaterials(scaffoldId)
+
+  existingMaterials.forEach((material) => {
+    materials.value[material.materialName] = material.quantity
+  })
+}
+
+async function handleSubmit() {
+  await updateScaffoldMaterials(scaffoldId, materialList.value)
+  await loadScaffold()
+  alert('Materials updated successfully')
+}
+
+onMounted(() => {
+  loadScaffold()
+})
 </script>
 
 <template>
@@ -10,10 +71,9 @@ import { RouterLink } from 'vue-router'
     >
       ← Back to List
     </RouterLink>
-
     <h1 class="mb-1 text-2xl font-bold text-orange-900">Modify Scaffold</h1>
     <p class="mb-6 text-sm text-amber-800">
-      Adding extra materials to scaffold <strong>0001</strong>
+      Adding extra materials to scaffold <strong>{{ scaffold?.tagNumber }}</strong>
     </p>
 
     <div class="mb-4 rounded-xl border border-orange-200 bg-amber-50 p-5">
@@ -22,21 +82,13 @@ import { RouterLink } from 'vue-router'
       </h2>
       <div class="flex flex-wrap gap-1.5">
         <span
+          v-for="material in materialList"
+          :key="material.materialName"
           class="rounded-full border border-yellow-200 bg-yellow-100 px-3 py-1 text-xs text-yellow-800"
-          >4 - 10ft Legs</span
         >
-        <span
-          class="rounded-full border border-yellow-200 bg-yellow-100 px-3 py-1 text-xs text-yellow-800"
-          >4 - 7ft Legs</span
-        >
-        <span
-          class="rounded-full border border-yellow-200 bg-yellow-100 px-3 py-1 text-xs text-yellow-800"
-          >2 - 10ft Runners</span
-        >
-        <span
-          class="rounded-full border border-yellow-200 bg-yellow-100 px-3 py-1 text-xs text-yellow-800"
-          >3 - 10ft Boards</span
-        >
+          {{ material.quantity }} -
+          {{ material.materialName }}
+        </span>
       </div>
     </div>
 
@@ -57,8 +109,8 @@ import { RouterLink } from 'vue-router'
             >10ft Legs</label
           >
           <input
+            v-model="materials['10ft Legs']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -70,8 +122,8 @@ import { RouterLink } from 'vue-router'
             >7ft Legs</label
           >
           <input
+            v-model="materials['7ft Legs']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -83,8 +135,8 @@ import { RouterLink } from 'vue-router'
             >5ft Legs</label
           >
           <input
+            v-model="materials['5ft Legs']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -96,8 +148,8 @@ import { RouterLink } from 'vue-router'
             >3ft Legs</label
           >
           <input
+            v-model="materials['3ft Legs']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -113,8 +165,8 @@ import { RouterLink } from 'vue-router'
             >10ft Runners</label
           >
           <input
+            v-model="materials['10ft Runners']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -126,8 +178,8 @@ import { RouterLink } from 'vue-router'
             >7ft Runners</label
           >
           <input
+            v-model="materials['7ft Runners']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -139,8 +191,8 @@ import { RouterLink } from 'vue-router'
             >5ft Runners</label
           >
           <input
+            v-model="materials['5ft Runners']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -152,8 +204,8 @@ import { RouterLink } from 'vue-router'
             >4ft Runners</label
           >
           <input
+            v-model="materials['4ft Runners']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -165,8 +217,8 @@ import { RouterLink } from 'vue-router'
             >2ft Runners</label
           >
           <input
+            v-model="materials['2ft Runners']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -182,8 +234,8 @@ import { RouterLink } from 'vue-router'
             >10ft Boards</label
           >
           <input
+            v-model="materials['10ft Boards']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -195,8 +247,8 @@ import { RouterLink } from 'vue-router'
             >7ft Boards</label
           >
           <input
+            v-model="materials['7ft Boards']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -208,8 +260,8 @@ import { RouterLink } from 'vue-router'
             >5ft Boards</label
           >
           <input
+            v-model="materials['5ft Boards']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -225,8 +277,8 @@ import { RouterLink } from 'vue-router'
         >
           <label class="flex-1 text-xs font-medium whitespace-nowrap text-amber-800">Jacks</label>
           <input
+            v-model="materials['Jacks']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -238,8 +290,8 @@ import { RouterLink } from 'vue-router'
             >Starters</label
           >
           <input
+            v-model="materials['Starters']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -251,8 +303,8 @@ import { RouterLink } from 'vue-router'
             >Right Angles</label
           >
           <input
+            v-model="materials['Right Angles']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -262,8 +314,8 @@ import { RouterLink } from 'vue-router'
         >
           <label class="flex-1 text-xs font-medium whitespace-nowrap text-amber-800">Swivels</label>
           <input
+            v-model="materials['Swivels']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -275,8 +327,8 @@ import { RouterLink } from 'vue-router'
             >Beam Clamps</label
           >
           <input
+            v-model="materials['Beam Clamps']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -286,6 +338,7 @@ import { RouterLink } from 'vue-router'
 
     <button
       class="w-full cursor-pointer rounded-lg border-none bg-linear-to-r from-amber-400 to-orange-500 py-3 font-semibold text-white transition-all hover:opacity-90 active:scale-95"
+      @click="handleSubmit"
     >
       Update Materials
     </button>

@@ -1,8 +1,13 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { RouterLink, useRouter, useRoute } from 'vue-router'
 
-import { getScaffoldById, updateScaffold } from '@/services/api'
+import {
+  getScaffoldById,
+  updateScaffold,
+  updateScaffoldMaterials,
+  getScaffoldMaterials,
+} from '@/services/api'
 
 const route = useRoute()
 const router = useRouter()
@@ -15,6 +20,38 @@ const length = ref(0)
 const width = ref(0)
 const height = ref(0)
 
+const materials = ref({
+  '10ft Legs': 0,
+  '7ft Legs': 0,
+  '5ft Legs': 0,
+  '3ft Legs': 0,
+
+  '10ft Runners': 0,
+  '7ft Runners': 0,
+  '5ft Runners': 0,
+  '4ft Runners': 0,
+  '2ft Runners': 0,
+
+  '10ft Boards': 0,
+  '7ft Boards': 0,
+  '5ft Boards': 0,
+
+  Jacks: 0,
+  Starters: 0,
+  'Right Angles': 0,
+  Swivels: 0,
+  'Beam Clamps': 0,
+})
+
+const materialList = computed(() => {
+  return Object.entries(materials.value)
+    .filter(([_, quantity]) => quantity > 0)
+    .map(([materialName, quantity]) => ({
+      materialName,
+      quantity,
+    }))
+})
+
 async function loadScaffold() {
   const scaffold = await getScaffoldById(scaffoldId)
 
@@ -23,6 +60,12 @@ async function loadScaffold() {
   length.value = scaffold.length
   width.value = scaffold.width
   height.value = scaffold.height
+
+  const existingMaterials = await getScaffoldMaterials(scaffoldId)
+
+  existingMaterials.forEach((material) => {
+    materials.value[material.materialName] = material.quantity
+  })
 }
 
 async function handleSubmit() {
@@ -33,6 +76,7 @@ async function handleSubmit() {
     width: Number(width.value),
     height: Number(height.value),
   })
+  await updateScaffoldMaterials(scaffoldId, materialList.value)
 
   router.push('/ScaffoldList')
 }
@@ -127,8 +171,8 @@ onMounted(() => {
             >10ft Legs</label
           >
           <input
+            v-model="materials['10ft Legs']"
             type="number"
-            value="4"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -140,8 +184,8 @@ onMounted(() => {
             >7ft Legs</label
           >
           <input
+            v-model="materials['7ft Legs']"
             type="number"
-            value="4"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -153,8 +197,8 @@ onMounted(() => {
             >5ft Legs</label
           >
           <input
+            v-model="materials['5ft Legs']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -166,8 +210,8 @@ onMounted(() => {
             >3ft Legs</label
           >
           <input
+            v-model="materials['3ft Legs']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -183,8 +227,8 @@ onMounted(() => {
             >10ft Runners</label
           >
           <input
+            v-model="materials['10ft Runners']"
             type="number"
-            value="2"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -196,8 +240,8 @@ onMounted(() => {
             >7ft Runners</label
           >
           <input
+            v-model="materials['7ft Runners']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -209,8 +253,8 @@ onMounted(() => {
             >5ft Runners</label
           >
           <input
+            v-model="materials['5ft Runners']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -222,8 +266,8 @@ onMounted(() => {
             >4ft Runners</label
           >
           <input
+            v-model="materials['4ft Runners']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -235,8 +279,8 @@ onMounted(() => {
             >2ft Runners</label
           >
           <input
+            v-model="materials['2ft Runners']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -252,8 +296,8 @@ onMounted(() => {
             >10ft Boards</label
           >
           <input
+            v-model="materials['10ft Boards']"
             type="number"
-            value="3"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -265,8 +309,8 @@ onMounted(() => {
             >7ft Boards</label
           >
           <input
+            v-model="materials['7ft Boards']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -278,8 +322,8 @@ onMounted(() => {
             >5ft Boards</label
           >
           <input
+            v-model="materials['5ft Boards']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -295,8 +339,8 @@ onMounted(() => {
         >
           <label class="flex-1 text-xs font-medium whitespace-nowrap text-amber-800">Jacks</label>
           <input
+            v-model="materials['Jacks']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -308,8 +352,8 @@ onMounted(() => {
             >Starters</label
           >
           <input
+            v-model="materials['Starters']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -321,8 +365,8 @@ onMounted(() => {
             >Right Angles</label
           >
           <input
+            v-model="materials['Right Angles']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -332,8 +376,8 @@ onMounted(() => {
         >
           <label class="flex-1 text-xs font-medium whitespace-nowrap text-amber-800">Swivels</label>
           <input
+            v-model="materials['Swivels']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />
@@ -345,8 +389,8 @@ onMounted(() => {
             >Beam Clamps</label
           >
           <input
+            v-model="materials['Beam Clamps']"
             type="number"
-            value="0"
             min="0"
             class="w-12 rounded-md border border-orange-200 bg-white px-1 py-1 text-center text-orange-900 outline-none focus:border-amber-400"
           />

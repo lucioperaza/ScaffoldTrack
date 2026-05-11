@@ -67,3 +67,23 @@ export async function deleteScaffold(id) {
 
   return response.json()
 }
+
+export async function getScaffoldMaterials(id) {
+  const response = await fetch(`${API_BASE}/scaffolds/${id}/materials`)
+
+  return response.json()
+}
+
+export async function updateScaffoldMaterials(id, materials) {
+  const response = await fetch(`${API_BASE}/scaffolds/${id}/materials`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      materials,
+    }),
+  })
+
+  return response.json()
+}
