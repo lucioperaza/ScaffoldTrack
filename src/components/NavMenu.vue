@@ -1,11 +1,10 @@
 <script setup>
 import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 const menuOpen = ref(false)
-const isLoggedIn = ref(false)
-
-isLoggedIn.value = !!localStorage.getItem('accessToken')
+const auth = useAuthStore()
 
 function toggleMenu() {
   menuOpen.value = !menuOpen.value
@@ -15,9 +14,7 @@ function closeMenu() {
 }
 
 function logout() {
-  localStorage.removeItem('accessToken')
-
-  window.location.href = '/'
+  auth.logout()
 }
 </script>
 
@@ -68,7 +65,7 @@ function logout() {
       </RouterLink>
 
       <RouterLink
-        v-if="!isLoggedIn"
+        v-if="!auth.isAuthenticated"
         to="/register"
         class="rounded-lg border border-white/25 bg-white/15 px-4 py-1.5 text-sm text-white no-underline transition-colors hover:bg-white/30"
         active-class="bg-white/35 font-semibold"
@@ -78,7 +75,7 @@ function logout() {
       </RouterLink>
 
       <RouterLink
-        v-if="!isLoggedIn"
+        v-if="!auth.isAuthenticated"
         to="/login"
         class="rounded-lg border border-white/25 bg-white/15 px-4 py-1.5 text-sm text-white no-underline transition-colors hover:bg-white/30"
         active-class="bg-white/35 font-semibold"
@@ -87,7 +84,7 @@ function logout() {
         Login
       </RouterLink>
       <button
-        v-if="isLoggedIn"
+        v-if="auth.isAuthenticated"
         class="rounded-lg border border-white/25 bg-white/15 px-4 py-1.5 text-sm text-white transition-colors hover:bg-white/30"
         @click="logout"
       >
@@ -143,7 +140,7 @@ function logout() {
         Scaffold List
       </RouterLink>
       <RouterLink
-        v-if="!isLoggedIn"
+        v-if="!auth.isAuthenticated"
         to="/register"
         class="border-b border-white/15 px-6 py-3.5 text-base font-medium text-white no-underline transition-colors hover:bg-white/15"
         active-class="bg-white/25 font-bold"
@@ -152,7 +149,7 @@ function logout() {
         Register
       </RouterLink>
       <RouterLink
-        v-if="!isLoggedIn"
+        v-if="!auth.isAuthenticated"
         to="/login"
         class="px-6 py-3.5 text-base font-medium text-white no-underline transition-colors hover:bg-white/15"
         active-class="bg-white/25 font-bold"
@@ -161,7 +158,7 @@ function logout() {
         Login
       </RouterLink>
       <button
-        v-if="isLoggedIn"
+        v-if="auth.isAuthenticated"
         class="w-full px-6 py-3.5 text-left text-base font-medium text-white transition-colors hover:bg-white/15"
         @click="logout"
       >

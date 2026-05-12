@@ -4,7 +4,10 @@ import { RouterLink, useRouter } from 'vue-router'
 
 import { loginUser } from '@/services/api'
 
+import { useAuthStore } from '@/stores/auth'
+
 const router = useRouter()
+const auth = useAuthStore()
 
 const email = ref('')
 const password = ref('')
@@ -26,12 +29,9 @@ async function handleLogin() {
       errorMessage.value = response.error
       return
     }
+    auth.login(response.accessToken, response.user)
 
-    localStorage.setItem('accessToken', response.accessToken)
-
-    alert('Login successful')
-
-    window.location.href = '/'
+    router.push('/')
   } catch (error) {
     errorMessage.value = 'Unable to login'
   } finally {
