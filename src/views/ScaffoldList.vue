@@ -3,26 +3,38 @@ import { RouterLink } from 'vue-router'
 import { onMounted, ref } from 'vue'
 import { getScaffolds, deleteScaffold, getScaffoldMaterials } from '../services/api'
 
+const isLoading = ref(true)
 const scaffolds = ref([])
 
 async function loadScaffolds() {
-  scaffolds.value = await getScaffolds()
+  isLoading.value = true
 
-  const scaffoldData = await getScaffolds()
+  try {
+    const scaffoldData = await getScaffolds()
 
-  for (const scaffold of scaffoldData) {
-    const materials = await getScaffoldMaterials(scaffold.id)
+    for (const scaffold of scaffoldData) {
+      const materials = await getScaffoldMaterials(scaffold.id)
 
-    scaffold.materialCount = materials.reduce(
-      (total, material) => total + Number(material.quantity),
-      0,
-    )
+      scaffold.materialCount = materials.reduce(
+        (total, material) => total + Number(material.quantity),
+
+        0,
+      )
+    }
+
+    scaffolds.value = scaffoldData
+  } finally {
+    isLoading.value = false
   }
-
-  scaffolds.value = scaffoldData
 }
 
 async function handleDelete(id) {
+  const confirmed = confirm('Are you sure you want to delete this scaffold?')
+
+  if (!confirmed) {
+    return
+  }
+
   await deleteScaffold(id)
 
   await loadScaffolds()
@@ -44,8 +56,15 @@ onMounted(() => {
 
     <h1 class="mb-1 text-2xl font-bold text-orange-900">Scaffold List</h1>
     <p class="mb-6 text-sm text-amber-800">All tracked scaffolds</p>
+
     <div
-      v-if="!scaffolds.length"
+      v-if="isLoading"
+      class="rounded-xl border border-orange-200 bg-white p-8 text-center"
+    >
+      <p class="text-sm text-amber-700">Loading scaffolds...</p>
+    </div>
+    <div
+      v-else-if="!scaffolds.length"
       class="rounded-xl border border-orange-200 bg-white p-8 text-center"
     >
       <h2 class="mb-2 text-lg font-semibold text-orange-900">No scaffolds yet</h2>
