@@ -1,5 +1,14 @@
 const API_BASE = 'http://127.0.0.1:8787/api'
 
+function getAuthHeaders() {
+  const token = localStorage.getItem('accessToken')
+
+  return {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  }
+}
+
 export async function registerUser(data) {
   const response = await fetch(`${API_BASE}/auth/register`, {
     method: 'POST',
@@ -25,7 +34,9 @@ export async function loginUser(data) {
 }
 
 export async function getScaffolds() {
-  const response = await fetch(`${API_BASE}/scaffolds`)
+  const response = await fetch(`${API_BASE}/scaffolds`, {
+    headers: getAuthHeaders(),
+  })
 
   return response.json()
 }
@@ -33,9 +44,7 @@ export async function getScaffolds() {
 export async function createScaffold(data) {
   const response = await fetch(`${API_BASE}/scaffolds`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: getAuthHeaders(),
     body: JSON.stringify(data),
   })
 
@@ -43,7 +52,9 @@ export async function createScaffold(data) {
 }
 
 export async function getScaffoldById(id) {
-  const response = await fetch(`${API_BASE}/scaffolds/${id}`)
+  const response = await fetch(`${API_BASE}/scaffolds/${id}`, {
+    headers: getAuthHeaders(),
+  })
 
   return response.json()
 }
@@ -51,9 +62,7 @@ export async function getScaffoldById(id) {
 export async function updateScaffold(id, data) {
   const response = await fetch(`${API_BASE}/scaffolds/${id}`, {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: getAuthHeaders(),
     body: JSON.stringify(data),
   })
 
@@ -63,13 +72,16 @@ export async function updateScaffold(id, data) {
 export async function deleteScaffold(id) {
   const response = await fetch(`${API_BASE}/scaffolds/${id}`, {
     method: 'DELETE',
+    headers: getAuthHeaders(),
   })
 
   return response.json()
 }
 
 export async function getScaffoldMaterials(id) {
-  const response = await fetch(`${API_BASE}/scaffolds/${id}/materials`)
+  const response = await fetch(`${API_BASE}/scaffolds/${id}/materials`, {
+    headers: getAuthHeaders(),
+  })
 
   return response.json()
 }
@@ -77,9 +89,7 @@ export async function getScaffoldMaterials(id) {
 export async function updateScaffoldMaterials(id, materials) {
   const response = await fetch(`${API_BASE}/scaffolds/${id}/materials`, {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: getAuthHeaders(),
     body: JSON.stringify({
       materials,
     }),
