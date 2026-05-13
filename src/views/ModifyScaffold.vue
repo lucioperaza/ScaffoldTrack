@@ -1,10 +1,11 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 
 import { getScaffoldById, getScaffoldMaterials, updateScaffoldMaterials } from '@/services/api'
 
 const route = useRoute()
+const router = useRouter()
 
 const scaffoldId = route.params.id
 
@@ -54,8 +55,8 @@ async function loadScaffold() {
 
 async function handleSubmit() {
   await updateScaffoldMaterials(scaffoldId, materialList.value)
-  await loadScaffold()
   alert('Materials updated successfully')
+  router.push('/ScaffoldList')
 }
 
 onMounted(() => {
