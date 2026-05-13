@@ -80,6 +80,24 @@ export async function loginUser(data) {
   return response.json()
 }
 
+export async function logoutUser() {
+  const refreshToken = localStorage.getItem('refreshToken')
+
+  if (!refreshToken) {
+    return
+  }
+
+  await fetch(`${API_BASE}/auth/logout`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      refreshToken,
+    }),
+  })
+}
+
 export async function getScaffolds() {
   const response = await authenticatedFetch(`${API_BASE}/scaffolds`, {
     headers: {

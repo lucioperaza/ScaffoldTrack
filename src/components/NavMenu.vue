@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { logoutUser } from '@/services/api'
 
 const menuOpen = ref(false)
 const router = useRouter()
@@ -14,7 +15,8 @@ function closeMenu() {
   menuOpen.value = false
 }
 
-function logout() {
+async function logout() {
+  await logoutUser()
   auth.logout()
   router.push('/')
 }
