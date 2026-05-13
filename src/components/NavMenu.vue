@@ -1,9 +1,10 @@
 <script setup>
 import { ref } from 'vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
 const menuOpen = ref(false)
+const router = useRouter()
 const auth = useAuthStore()
 
 function toggleMenu() {
@@ -15,6 +16,7 @@ function closeMenu() {
 
 function logout() {
   auth.logout()
+  router.push('/')
 }
 </script>
 
