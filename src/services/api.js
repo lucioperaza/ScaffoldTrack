@@ -1,12 +1,59 @@
 const API_BASE = 'http://127.0.0.1:8787/api'
 
-function getAuthHeaders() {
-  const token = localStorage.getItem('accessToken')
-
-  return {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`,
+async function refreshAccessToken() {
+  const refreshToken = localStorage.getItem('refreshToken')
+  if (!refreshToken) {
+    return null
   }
+  const response = await fetch(`${API_BASE}/auth/refresh`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      refreshToken,
+    }),
+  })
+
+  const data = await response.json()
+
+  if (data.accessToken) {
+    localStorage.setItem('accessToken', data.accessToken)
+    return data.accessToken
+  }
+
+  return null
+}
+async function authenticatedFetch(url, options = {}) {
+  let accessToken = localStorage.getItem('accessToken')
+  let response = await fetch(url, {
+    ...options,
+    headers: {
+      ...options.headers,
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+
+  if (response.status === 401) {
+    const newAccessToken = await refreshAccessToken()
+    if (!newAccessToken) {
+      localStorage.removeItem('accessToken')
+      localStorage.removeItem('refreshToken')
+      localStorage.removeItem('user')
+      window.location.href = '/login'
+      return response
+    }
+
+    response = await fetch(url, {
+      ...options,
+      headers: {
+        ...options.headers,
+        Authorization: `Bearer ${newAccessToken}`,
+      },
+    })
+  }
+
+  return response
 }
 
 export async function registerUser(data) {
@@ -34,17 +81,21 @@ export async function loginUser(data) {
 }
 
 export async function getScaffolds() {
-  const response = await fetch(`${API_BASE}/scaffolds`, {
-    headers: getAuthHeaders(),
+  const response = await authenticatedFetch(`${API_BASE}/scaffolds`, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
   })
 
   return response.json()
 }
 
 export async function createScaffold(data) {
-  const response = await fetch(`${API_BASE}/scaffolds`, {
+  const response = await authenticatedFetch(`${API_BASE}/scaffolds`, {
     method: 'POST',
-    headers: getAuthHeaders(),
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(data),
   })
 
@@ -52,17 +103,21 @@ export async function createScaffold(data) {
 }
 
 export async function getScaffoldById(id) {
-  const response = await fetch(`${API_BASE}/scaffolds/${id}`, {
-    headers: getAuthHeaders(),
+  const response = await authenticatedFetch(`${API_BASE}/scaffolds/${id}`, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
   })
 
   return response.json()
 }
 
 export async function updateScaffold(id, data) {
-  const response = await fetch(`${API_BASE}/scaffolds/${id}`, {
+  const response = await authenticatedFetch(`${API_BASE}/scaffolds/${id}`, {
     method: 'PUT',
-    headers: getAuthHeaders(),
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(data),
   })
 
@@ -70,26 +125,32 @@ export async function updateScaffold(id, data) {
 }
 
 export async function deleteScaffold(id) {
-  const response = await fetch(`${API_BASE}/scaffolds/${id}`, {
+  const response = await authenticatedFetch(`${API_BASE}/scaffolds/${id}`, {
     method: 'DELETE',
-    headers: getAuthHeaders(),
+    headers: {
+      'Content-Type': 'application/json',
+    },
   })
 
   return response.json()
 }
 
 export async function getScaffoldMaterials(id) {
-  const response = await fetch(`${API_BASE}/scaffolds/${id}/materials`, {
-    headers: getAuthHeaders(),
+  const response = await authenticatedFetch(`${API_BASE}/scaffolds/${id}/materials`, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
   })
 
   return response.json()
 }
 
 export async function updateScaffoldMaterials(id, materials) {
-  const response = await fetch(`${API_BASE}/scaffolds/${id}/materials`, {
+  const response = await authenticatedFetch(`${API_BASE}/scaffolds/${id}/materials`, {
     method: 'PUT',
-    headers: getAuthHeaders(),
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify({
       materials,
     }),

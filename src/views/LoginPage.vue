@@ -29,10 +29,10 @@ async function handleLogin() {
       errorMessage.value = response.error
       return
     }
-    auth.login(response.accessToken, response.user)
+    auth.login(response.accessToken, response.refreshToken, response.user)
 
     router.push('/')
-  } catch (error) {
+  } catch {
     errorMessage.value = 'Unable to login'
   } finally {
     isLoading.value = false
